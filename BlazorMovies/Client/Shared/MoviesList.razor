@@ -1,0 +1,27 @@
+﻿<div class="col-12">
+    <div class="d-flex align-content-center">
+        <input class="form-check-input " type="checkbox" @bind="displayDelete" />
+        <p>@(displayDelete ? "Hide delete button" : "Show delete button" ) </p>
+    </div>
+</div>
+
+<GenericList List="Movies">
+    <ItemTemplate Context="movie">
+            <IndividualMovie Movie="movie" 
+                             DisplayDelete="displayDelete"
+                             DeleteMovie="DeleteMovie" />
+    </ItemTemplate>
+</GenericList>
+
+@code {
+
+    [Parameter] public List<Movie> Movies { get; set; }
+    
+    bool displayDelete = false;
+
+    private void DeleteMovie(Movie movie)
+    {
+        Movies.Remove(movie);
+    }
+
+}
