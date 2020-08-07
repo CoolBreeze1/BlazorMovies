@@ -1,4 +1,6 @@
-﻿<div class="col-12">
+﻿@inject IJSRuntime js
+
+<div class="col-12">
     <div class="d-flex align-content-center">
         <input class="form-check-input " type="checkbox" @bind="displayDelete" />
         <p>@(displayDelete ? "Hide delete button" : "Show delete button" ) </p>
@@ -7,21 +9,47 @@
 
 <GenericList List="Movies">
     <ItemTemplate Context="movie">
-            <IndividualMovie Movie="movie" 
-                             DisplayDelete="displayDelete"
-                             DeleteMovie="DeleteMovie" />
+        <IndividualMovie Movie="movie" 
+            DisplayDelete="displayDelete"
+            DeleteMovie="DeleteMovie" />
     </ItemTemplate>
 </GenericList>
 
-@code {
+<Confirmation @ref="confirmation" onCancel="onCancel" onConfirm="onConfirm" >
+    <div>Do you wish to delete @movieToBeDeleted.Title.</div>
+</Confirmation>
 
+@code {
+    Confirmation confirmation;
     [Parameter] public List<Movie> Movies { get; set; }
-    
+
     bool displayDelete = false;
 
-    private void DeleteMovie(Movie movie)
+    Movie movieToBeDeleted;
+    private async Task DeleteMovie(Movie movie)
     {
-        Movies.Remove(movie);
+        movieToBeDeleted = movie;
+        confirmation.Show();
+        //await js.PrintToConsole("some message");
+        //var confirmed = await js.Confirm($"Are you sure you want to delete {movie.Title}?");
+        //if (confirmed)
+        //{
+        //    Movies.Remove(movie);
+        //}
     }
+
+    void onConfirm()
+    {
+        Movies.Remove(movieToBeDeleted);
+        confirmation.Hide();
+        movieToBeDeleted = null;
+    }
+
+    void onCancel()
+    {
+        confirmation.Hide();
+        movieToBeDeleted = null;
+    }
+
 
 }
